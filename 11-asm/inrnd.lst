@@ -1,0 +1,526 @@
+     1                                  ; file.asm - использование файлов в NASM
+     2                                  extern printf
+     3                                  extern rand
+     4                                  
+     5                                  
+     6                                  extern AUTOMOBILE
+     7                                  extern BUS
+     8                                  extern TRUCK
+     9                                  
+    10                                  
+    11                                  ;----------------------------------------------
+    12                                  ; // rnd.c - содержит генератор случайных чисел в диапазоне от 1 до 20
+    13                                  ; int Random() {
+    14                                  ;     return rand() % 20 + 1;
+    15                                  ; }
+    16                                  global Random
+    17                                  Random:
+    18                                  section .data
+    19 00000000 1400000000000000            .i20     dq      20
+    20 00000008 52616E646F6D206E75-         .rndNumFmt       db "Random number = %d",10,0
+    20 00000011 6D626572203D202564-
+    20 0000001A 0A00               
+    21                                  section .text
+    22 00000000 55                      push rbp
+    23 00000001 4889E5                  mov rbp, rsp
+    24                                  
+    25 00000004 4831C0                      xor     rax, rax    ;
+    26 00000007 E8(00000000)                call    rand        ; запуск генератора случайных чисел
+    27 0000000C 4831D2                      xor     rdx, rdx    ; обнуление перед делением
+    28 0000000F 48F73C25[00000000]          idiv    qword[.i20]       ; (/%) -> остаток в rdx
+    29 00000017 4889D0                      mov     rax, rdx
+    30 0000001A 48FFC0                      inc     rax         ; должно сформироваться случайное число
+    31                                  
+    32                                      ;mov     rdi, .rndNumFmt
+    33                                      ;mov     esi, eax
+    34                                      ;xor     rax, rax
+    35                                      ;call    printf
+    36                                  
+    37                                  
+    38 0000001D C9                      leave
+    39 0000001E C3                      ret
+    40                                  
+    41                                  ;inline auto RandomDistance() {
+    42                                  ;    return rand() % 10000 + 1 + (double) rand() / RAND_MAX;
+    43                                  ;}
+    44                                  global RandomFuelConsumption
+    45                                  RandomFuelConsumption:
+    46                                  section .data
+    47 0000001C 8813000000000000            .i20     dq      5000
+    48 00000024 52616E646F6D206E75-         .rndNumFmt       db "Random number = %d",10,0
+    48 0000002D 6D626572203D202564-
+    48 00000036 0A00               
+    49                                  section .text
+    50 0000001F 55                      push rbp
+    51 00000020 4889E5                  mov rbp, rsp
+    52                                  
+    53 00000023 4831C0                      xor     rax, rax    ;
+    54 00000026 E8(00000000)                call    rand        ; запуск генератора случайных чисел
+    55 0000002B 4831D2                      xor     rdx, rdx    ; обнуление перед делением
+    56 0000002E 48F73C25[1C000000]          idiv    qword[.i20]       ; (/%) -> остаток в rdx
+    57 00000036 4889D0                      mov     rax, rdx
+    58 00000039 4883C00A                    add     rax,10         ; должно сформироваться случайное число
+    59                                  
+    60                                      ;mov     rdi, .rndNumFmt
+    61                                      ;mov     esi, eax
+    62                                      ;xor     rax, rax
+    63                                      ;call    printf
+    64                                  ;section .data
+    65                                  ;    .i20     dq      10000
+    66                                  ;    .rndNumFmt       db "Random number = %lg",10,0
+    67                                  ;section .bss
+    68                                  ;    .prect  resq 1   ;случайно числа
+    69                                  ;section .text
+    70                                  ;push rbp
+    71                                  ;mov rbp, rsp
+    72                                  ;
+    73                                  ;    xor     rax, rax    
+    74                                  ;    call    rand
+    75                                  ;    xor     rdx, rdx    ; обнуление перед делением
+    76                                  ;    idiv    qword[.i20]   
+    77                                  ;    mov     rax, rdx
+    78                                  ;    cvtsi2sd    xmm0 , rax
+    79                                  ;    mov rax, [.i20]
+    80                                  ;    cvtsi2sd    xmm1 , rax
+    81                                  ;    divsd    xmm0 , xmm1 ; дробная часть в xmm0
+    82                                  ;    movsd xmm2 , xmm0
+    83                                  ;     ;Вывод дробной части
+    84                                  ;     ;mov     rdi, .rndNumFmt
+    85                                  ;;     movsd  xmm0 , xmm2
+    86                                  ;;    mov     rax, 1
+    87                                  ;;    call    printf
+    88                                  ;
+    89                                  ;    xor     rax, rax    ;
+    90                                  ;    call    rand        ; запуск генератора случайных чисел
+    91                                  ;    xor     rdx, rdx    ; обнуление перед делением
+    92                                  ;    idiv    qword[.i20]       ; (/%) -> остаток в rdx
+    93                                  ;    mov     rax, rdx
+    94                                  ;    inc     rax         ; должно сформироваться случайное число
+    95                                  ;    cvtsi2sd    xmm1, rax
+    96                                  ;    addsd   xmm2 , xmm1
+    97                                  ;    movsd xmm0 , xmm2
+    98                                  ;    
+    99                                  ;
+   100                                  ;    ;mov     rdi, .rndNumFmt
+   101                                  ;;    mov     [rsi], xmm0
+   102                                  ;;    mov     rax, 1
+   103                                  ;;    call    printf
+   104                                  ;
+   105                                  
+   106 0000003D C9                      leave
+   107 0000003E C3                      ret
+   108                                  
+   109                                  ;inline auto RandomShipType() {
+   110                                  ;    return rand() % 3 + 1;
+   111                                  ;}
+   112                                  global RandomCarType
+   113                                  RandomCarType:
+   114                                  section .data
+   115 00000038 0300000000000000            .i20     dq      3
+   116 00000040 52616E646F6D206E75-         .rndNumFmt       db "Random number = %d",10,0
+   116 00000049 6D626572203D202564-
+   116 00000052 0A00               
+   117                                  section .text
+   118 0000003F 55                      push rbp
+   119 00000040 4889E5                  mov rbp, rsp
+   120                                  
+   121 00000043 4831C0                      xor     rax, rax    ;
+   122 00000046 E8(00000000)                call    rand        ; запуск генератора случайных чисел
+   123 0000004B 4831D2                      xor     rdx, rdx    ; обнуление перед делением
+   124 0000004E 48F73C25[38000000]          idiv    qword[.i20]       ; (/%) -> остаток в rdx
+   125 00000056 4889D0                      mov     rax, rdx
+   126 00000059 48FFC0                      inc     rax         ; должно сформироваться случайное число
+   127                                  
+   128                                      ;mov     rdi, .rndNumFmt
+   129                                      ;mov     esi, eax
+   130                                      ;xor     rax, rax
+   131                                      ;call    printf
+   132                                  
+   133                                  
+   134 0000005C C9                      leave
+   135 0000005D C3                      ret
+   136                                  
+   137                                  ;inline auto RandomSpeed() {
+   138                                  ;    return rand() % 500 + 1;
+   139                                  ;}
+   140                                  global RandomMaxSpeed
+   141                                  RandomMaxSpeed:
+   142                                  section .data
+   143 00000054 F401000000000000            .i20     dq      500
+   144 0000005C 52616E646F6D206E75-         .rndNumFmt       db "Random number = %d",10,0
+   144 00000065 6D626572203D202564-
+   144 0000006E 0A00               
+   145                                  section .text
+   146 0000005E 55                      push rbp
+   147 0000005F 4889E5                  mov rbp, rsp
+   148                                  
+   149 00000062 4831C0                      xor     rax, rax    ;
+   150 00000065 E8(00000000)                call    rand        ; запуск генератора случайных чисел
+   151 0000006A 4831D2                      xor     rdx, rdx    ; обнуление перед делением
+   152 0000006D 48F73C25[54000000]          idiv    qword[.i20]       ; (/%) -> остаток в rdx
+   153 00000075 4889D0                      mov     rax, rdx
+   154 00000078 48FFC0                      inc     rax         ; должно сформироваться случайное число
+   155                                  
+   156                                      ;mov     rdi, .rndNumFmt
+   157                                      ;mov     esi, eax
+   158                                      ;xor     rax, rax
+   159                                      ;call    printf
+   160                                  
+   161                                  
+   162 0000007B C9                      leave
+   163 0000007C C3                      ret
+   164                                  
+   165                                  ;inline auto RandomDisplacement() {
+   166                                  ;    return rand() % 50000 + 10;
+   167                                  ;}
+   168                                  
+   169                                  global RandomFuelCapacity
+   170                                  RandomFuelCapacity:
+   171                                  section .data
+   172 00000070 E803000000000000            .i20     dq      1000
+   173 00000078 52616E646F6D206E75-         .rndNumFmt       db "Random number = %d",10,0
+   173 00000081 6D626572203D202564-
+   173 0000008A 0A00               
+   174                                  section .text
+   175 0000007D 55                      push rbp
+   176 0000007E 4889E5                  mov rbp, rsp
+   177                                  
+   178 00000081 4831C0                      xor     rax, rax    ;
+   179 00000084 E8(00000000)                call    rand        ; запуск генератора случайных чисел
+   180 00000089 4831D2                      xor     rdx, rdx    ; обнуление перед делением
+   181 0000008C 48F73C25[70000000]          idiv    qword[.i20]       ; (/%) -> остаток в rdx
+   182 00000094 4889D0                      mov     rax, rdx
+   183 00000097 48FFC0                      inc     rax         ; должно сформироваться случайное число
+   184                                  
+   185                                      ;mov     rdi, .rndNumFmt
+   186                                      ;mov     esi, eax
+   187                                      ;xor     rax, rax
+   188                                      ;call    printf
+   189                                  ;section .data
+   190                                  ;    .i20     dq      1000
+   191                                  ;    .rndNumFmt       db "Random number = %lg",10,0
+   192                                  ;section .bss
+   193                                  ;    .prect  resq 1   ;случайно числа
+   194                                  ;section .text
+   195                                  ;push rbp
+   196                                  ;mov rbp, rsp
+   197                                  ;
+   198                                  ;    xor     rax, rax    
+   199                                  ;    call    rand
+   200                                  ;    xor     rdx, rdx    ; обнуление перед делением
+   201                                  ;    idiv    qword[.i20]   
+   202                                  ;    mov     rax, rdx
+   203                                  ;    cvtsi2sd    xmm0 , rax
+   204                                  ;    mov rax, [.i20]
+   205                                  ;    cvtsi2sd    xmm1 , rax
+   206                                  ;    divsd    xmm0 , xmm1 ; дробная часть в xmm0
+   207                                  ;    movsd xmm2 , xmm0
+   208                                  ;     ;Вывод дробной части
+   209                                  ;     ;mov     rdi, .rndNumFmt
+   210                                  ;;     movsd  xmm0 , xmm2
+   211                                  ;;    mov     rax, 1
+   212                                  ;;    call    printf
+   213                                  ;
+   214                                  ;    xor     rax, rax    ;
+   215                                  ;    call    rand        ; запуск генератора случайных чисел
+   216                                  ;    xor     rdx, rdx    ; обнуление перед делением
+   217                                  ;    idiv    qword[.i20]       ; (/%) -> остаток в rdx
+   218                                  ;    mov     rax, rdx
+   219                                  ;    inc     rax         ; должно сформироваться случайное число
+   220                                  ;    cvtsi2sd    xmm1, rax
+   221                                  ;    addsd   xmm2 , xmm1
+   222                                  ;    movsd xmm0 , xmm2
+   223                                  ;    
+   224                                  
+   225                                      ;mov     rdi, .rndNumFmt
+   226                                  ;    mov     [rsi], xmm0
+   227                                  ;    mov     rax, 1
+   228                                  ;    call    printf
+   229                                  
+   230                                  ;section .data
+   231                                  ;    .i20     dq      50000
+   232                                  ;    .rndNumFmt       db "Random number = %d",10,0
+   233                                  ;section .text
+   234                                  ;push rbp
+   235                                  ;mov rbp, rsp
+   236                                  ;
+   237                                  ;    xor     rax, rax    ;
+   238                                  ;    call    rand        ; запуск генератора случайных чисел
+   239                                  ;    xor     rdx, rdx    ; обнуление перед делением
+   240                                  ;    idiv    qword[.i20]       ; (/%) -> остаток в rdx
+   241                                  ;    mov     rax, rdx
+   242                                  ;    add     rax,10         ; должно сформироваться случайное число
+   243                                  ;
+   244                                  ;    ;mov     rdi, .rndNumFmt
+   245                                  ;    ;mov     esi, eax
+   246                                  ;    ;xor     rax, rax
+   247                                  ;    ;call    printf
+   248 0000009A C9                      leave
+   249 0000009B C3                      ret
+   250                                  
+   251                                  ;----------------------------------------------
+   252                                  ;// Случайный ввод параметров поезда
+   253                                  ;void InRnd(train &t) {
+   254                                  ;    t.numberOfRailwayCarriage = Random();
+   255                                  ;    t.speed = RandomSpeed();
+   256                                  ;    t.distance = RandomDistance();
+   257                                  ;}
+   258                                  global InRndAutomobile
+   259                                  InRndAutomobile:
+   260                                  section .data
+   261 0000008C 496E524E444155544F-         .outf  db "InRNDAUTOMOBILE, %d",10,0
+   261 00000095 4D4F42494C452C2025-
+   261 0000009E 640A00             
+   262                                  section .bss
+   263 00000000 <res 00000008>              .prect  resq 1   ; адрес поезда
+   264                                  section .text
+   265 0000009C 55                      push rbp
+   266 0000009D 4889E5                  mov rbp, rsp
+   267                                  
+   268                                      ; В rdi адрес поезда
+   269 000000A0 48893C25[00000000]          mov     [.prect], rdi
+   270                                      ; Генерация параметров поезда
+   271 000000A8 E8B1FFFFFF                  call    RandomMaxSpeed
+   272 000000AD 488B1C25[00000000]          mov     rbx, [.prect]
+   273 000000B5 8903                        mov     [rbx], eax
+   274 000000B7 E863FFFFFF                  call    RandomFuelConsumption
+   275 000000BC 488B1C25[00000000]          mov     rbx, [.prect]
+   276 000000C4 894304                      mov     [rbx+4], eax
+   277 000000C7 E8B1FFFFFF                  call    RandomFuelCapacity
+   278                                  
+   279 000000CC 488B1C25[00000000]          mov     rbx, [.prect]
+   280 000000D4 894308                      mov  [rbx+8], eax
+   281                                      
+   282                                  ;    mov rdi, .outf
+   283                                  ;    movsd xmm0 ,[rbx+8]
+   284                                  ;    mov rax,1
+   285                                  ;    call printf
+   286                                      
+   287 000000D7 C9                      leave
+   288 000000D8 C3                      ret
+   289                                  
+   290                                  ;----------------------------------------------
+   291                                  ;// Ввод параметров самолета из потока
+   292                                  ;void In(plane &p, ifstream &ifst) {
+   293                                  ;    ifst >> p.flightRange >> p.liftingCapacity >> p.speed >> p.distance;
+   294                                  ;
+   295                                  ;}
+   296                                  ;
+   297                                  ;// Случайный ввод параметров самолета
+   298                                  ;void InRnd(plane &p) {
+   299                                  ;    p.liftingCapacity = RandomDisplacement();
+   300                                  ;    p.flightRange = RandomDisplacement();
+   301                                  ;    p.speed = RandomSpeed();
+   302                                  ;    p.distance = RandomDistance();
+   303                                  ;}
+   304                                  global InRndTruck
+   305                                  InRndTruck:
+   306                                  section .bss
+   307 00000008 <res 00000008>              .prect  resq 1   ; адрес ship
+   308                                  section .text
+   309 000000D9 55                      push rbp
+   310 000000DA 4889E5                  mov rbp, rsp
+   311                                  
+   312                                   ; В rdi адрес поезда
+   313 000000DD 48893C25[08000000]          mov     [.prect], rdi
+   314                                      ; Генерация параметров поезда
+   315 000000E5 E874FFFFFF                  call    RandomMaxSpeed
+   316 000000EA 488B1C25[08000000]          mov     rbx, [.prect]
+   317 000000F2 8903                        mov     [rbx], eax
+   318 000000F4 E826FFFFFF                  call    RandomFuelConsumption
+   319 000000F9 488B1C25[08000000]          mov     rbx, [.prect]
+   320 00000101 894304                      mov     [rbx+4], eax
+   321 00000104 E874FFFFFF                  call    RandomFuelCapacity
+   322                                  
+   323 00000109 488B1C25[08000000]          mov     rbx, [.prect]
+   324 00000111 894308                      mov  [rbx+8], eax
+   325                                  
+   326                                      ;; В rdi адрес поезда
+   327                                  ;    mov     [.prect], rdi
+   328                                  ;    ; Генерация параметров корабля
+   329                                  ;    call    Random
+   330                                  ;    mov     rbx, [.prect]
+   331                                  ;    mov     [rbx], eax
+   332                                  ;    call     RandomFuelConsumption
+   333                                  ;    mov     rbx, [.prect]
+   334                                  ;    mov     [rbx+4], eax
+   335                                  ;    call   RandomFuelCapacity
+   336                                  ;    mov     rbx, [.prect]
+   337                                  ;    movsd  [rbx+12], xmm0
+   338                                      
+   339                                  ;    mov rdi, .outf
+   340                                  ;    movsd xmm0 ,[rbx+8]
+   341                                  ;    mov rax,1
+   342                                  ;    call printf
+   343 00000114 C9                      leave
+   344 00000115 C3                      ret
+   345                                  
+   346                                  ;// Ввод параметров корабля из потока
+   347                                  ;void In(ship &s, ifstream &ifst) {
+   348                                  ;    int type;
+   349                                  ;    ifst >> s.displacement >> type >> s.speed >> s.distance;
+   350                                  ;    s.type = (shipType)type;
+   351                                  ;}
+   352                                  ;
+   353                                  ;// Случайный ввод параметров корабля
+   354                                  ;void InRnd(ship &s) {
+   355                                  ;    s.displacement =RandomDisplacement();
+   356                                  ;    s.type = (shipType)RandomShipType();
+   357                                  ;    s.speed = RandomSpeed();
+   358                                  ;    s.distance = RandomDistance();
+   359                                  ;}
+   360                                  global InRndBus
+   361                                  InRndBus:
+   362                                  section .bss
+   363 00000010 <res 00000008>              .prect  resq 1   ; адрес ship
+   364                                  section .text
+   365 00000116 55                      push rbp
+   366 00000117 4889E5                  mov rbp, rsp
+   367                                      ; В rdi адрес поезда
+   368 0000011A 48893C25[10000000]          mov     [.prect], rdi
+   369                                      ; Генерация параметров корабля
+   370 00000122 E837FFFFFF                  call    RandomMaxSpeed
+   371 00000127 488B1C25[10000000]          mov     rbx, [.prect]
+   372 0000012F 8903                        mov     [rbx], eax
+   373 00000131 E8E9FEFFFF                  call    RandomFuelConsumption
+   374 00000136 488B1C25[10000000]          mov     rbx, [.prect]
+   375 0000013E 894304                      mov     [rbx+4], eax
+   376 00000141 E837FFFFFF                  call    RandomFuelCapacity
+   377                                  
+   378 00000146 488B1C25[10000000]          mov     rbx, [.prect]
+   379 0000014E 894308                      mov  [rbx+8], eax
+   380                                      
+   381                                  ;    mov rdi, .outf
+   382                                  ;    movsd xmm0 ,[rbx+8]
+   383                                  ;    mov rax,1
+   384                                  ;    call printf
+   385 00000151 C9                      leave
+   386 00000152 C3                      ret
+   387                                  
+   388                                  ;----------------------------------------------
+   389                                  ;// Случайный ввод обобщенной фигуры
+   390                                  ;int InRndTransport(void *s) {
+   391                                      ;int k = rand() % 2 + 1;
+   392                                      ;switch(k) {
+   393                                          ;case 1:
+   394                                              ;*((int*)s) = RECTANGLE;
+   395                                              ;InRndTrain(s+intSize);
+   396                                              ;return 1;
+   397                                          ;case 2:
+   398                                              ;*((int*)s) = TRIANGLE;
+   399                                              ;InRndShip(s+intSize);
+   400                                              ;return 1;
+   401                                          ;default:
+   402                                              ;return 0;
+   403                                      ;}
+   404                                  ;}
+   405                                  global InRndCar
+   406                                  InRndCar:
+   407                                  section .data
+   408 000000A1 52616E646F6D206E75-         .rndNumFmt       db "Random number = %d",10,0
+   408 000000AA 6D626572203D202564-
+   408 000000B3 0A00               
+   409                                  section .bss
+   410 00000018 <res 00000008>              .pshape     resq    1   ; адрес фигуры
+   411 00000020 <res 00000004>              .key        resd    1   ; ключ
+   412                                  section .text
+   413 00000153 55                      push rbp
+   414 00000154 4889E5                  mov rbp, rsp
+   415                                  
+   416                                      ; В rdi адрес фигуры
+   417 00000157 48893C25[18000000]          mov [.pshape], rdi
+   418                                  
+   419                                      ; Формирование признака фигуры
+   420 0000015F 4831C0                      xor     rax, rax    ;
+   421 00000162 E8D8FEFFFF                  call     RandomCarType       ; запуск генератора случайных чисел
+   422                                      ;mov eax, 1;- генерируется только поезд
+   423                                      ;mov     [.key], eax
+   424                                      ;mov     rdi, .rndNumFmt
+   425                                      ;mov     esi, [.key]
+   426                                      ;xor     rax, rax
+   427                                      ;call    printf
+   428                                      ;mov     eax, [.key]
+   429                                  
+   430 00000167 488B3C25[18000000]          mov     rdi, [.pshape]
+   431 0000016F 8907                        mov     [rdi], eax      ; запись ключа в фигуру
+   432 00000171 3B0425[00000000]            cmp eax, [TRUCK]
+   433 00000178 7416                        je .truckInrnd
+   434 0000017A 3B0425[00000000]            cmp eax, [BUS] ; 
+   435 00000181 741D                        je .busInRnd
+   436 00000183 3B0425[00000000]            cmp eax, [AUTOMOBILE] ; 
+   437 0000018A 7424                        je .automobileInRnd
+   438 0000018C 31C0                        xor eax, eax        ; код возврата = 0
+   439 0000018E EB30                        jmp     .return
+   440                                  .truckInrnd:
+   441                                      ; Генерация поезда
+   442 00000190 4883C704                    add     rdi, 4
+   443 00000194 E840FFFFFF                  call    InRndTruck
+   444 00000199 B801000000                  mov     eax, 1      ;код возврата = 1
+   445 0000019E EB20                        jmp     .return
+   446                                  .busInRnd:
+   447                                      ; Генерация ship
+   448 000001A0 4883C704                    add     rdi, 4
+   449 000001A4 E86DFFFFFF                  call    InRndBus
+   450 000001A9 B801000000                  mov     eax, 1      ;код возврата = 1
+   451 000001AE EB10                        jmp     .return
+   452                                  .automobileInRnd:
+   453                                      ; Генерация ship
+   454 000001B0 4883C704                    add     rdi, 4
+   455 000001B4 E8E3FEFFFF                  call    InRndAutomobile
+   456 000001B9 B801000000                  mov     eax, 1      ;код возврата = 1
+   457 000001BE EB00                        jmp     .return
+   458                                  .return:
+   459 000001C0 C9                      leave
+   460 000001C1 C3                      ret
+   461                                  
+   462                                  ;----------------------------------------------
+   463                                  ;// Случайный ввод содержимого контейнера
+   464                                  ;void InRndContainer(void *c, int *len, int size) {
+   465                                      ;void *tmp = c;
+   466                                      ;while(*len < size) {
+   467                                          ;if(InRndTransport(tmp)) {
+   468                                              ;tmp = tmp + shapeSize;
+   469                                              ;(*len)++;
+   470                                          ;}
+   471                                      ;}
+   472                                  ;}
+   473                                  global InRndContainer
+   474                                  InRndContainer:
+   475                                  section .bss
+   476 00000024 <res 00000008>              .pcont  resq    1   ; адрес контейнера
+   477 0000002C <res 00000008>              .plen   resq    1   ; адрес для сохранения числа введенных элементов
+   478 00000034 <res 00000004>              .psize  resd    1   ; число порождаемых элементов
+   479                                  section .text
+   480 000001C2 55                      push rbp
+   481 000001C3 4889E5                  mov rbp, rsp
+   482                                  
+   483 000001C6 48893C25[24000000]          mov [.pcont], rdi   ; сохраняется указатель на контейнер
+   484 000001CE 48893425[2C000000]          mov [.plen], rsi    ; сохраняется указатель на длину
+   485 000001D6 891425[34000000]            mov [.psize], edx    ; сохраняется число порождаемых элементов
+   486                                      ; В rdi адрес начала контейнера
+   487 000001DD 31DB                        xor ebx, ebx        ; число фигур = 0
+   488                                  .loop:
+   489 000001DF 39D3                        cmp ebx, edx
+   490 000001E1 7D1A                        jge     .return
+   491                                      ; сохранение рабочих регистров
+   492 000001E3 57                          push rdi
+   493 000001E4 53                          push rbx
+   494 000001E5 52                          push rdx
+   495                                  
+   496 000001E6 E868FFFFFF                  call    InRndCar     ; ввод фигуры
+   497 000001EB 4883F800                    cmp rax, 0          ; проверка успешности ввода
+   498 000001EF 7E0C                        jle  .return        ; выход, если признак меньше или равен 0
+   499                                  
+   500 000001F1 5A                          pop rdx
+   501 000001F2 5B                          pop rbx
+   502 000001F3 48FFC3                      inc rbx
+   503                                  
+   504 000001F6 5F                          pop rdi
+   505 000001F7 4883C718                    add rdi, 24             ; адрес следующей фигуры
+   506                                  
+   507 000001FB EBE2                        jmp .loop
+   508                                  .return:
+   509 000001FD 488B0425[2C000000]          mov rax, [.plen]    ; перенос указателя на длину
+   510 00000205 8918                        mov [rax], ebx      ; занесение длины
+   511 00000207 C9                      leave
+   512 00000208 C3                      ret
