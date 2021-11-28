@@ -1,0 +1,9 @@
+Filled container:
+0: It is a truck:  fuel_consumption = 34, fuel_capacity = 2300, lifting_capacity = 0. Distance = 67.6471
+1: It is a bus:  fuel_consumption =  46, fuel_capacity = 15, passenger_capacity  =  0. Distance = 0.326087
+2: It is a automobile: fuel_consumption = 35, fuel_capacity = 178, max_speed = 0. Distanse = 5.08571
+3: It is a truck:  fuel_consumption = 26, fuel_capacity = 4870, lifting_capacity = 0. Distance = 187.308
+4: It is a truck:  fuel_consumption = 34, fuel_capacity = 3657, lifting_capacity = 0. Distance = 107.559
+5: It is a automobile: fuel_consumption = 29, fuel_capacity = 155, max_speed = 0. Distanse = 5.34483
+6: It is a automobile: fuel_consumption = 24, fuel_capacity = 189, max_speed = 0. Distanse = 7.875
+7: It is a automobile: fuel_consumption = 26, fuel_capacity = 190, max_speed = 0. Distanse = 7.30769
